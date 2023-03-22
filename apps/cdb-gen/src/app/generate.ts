@@ -1,7 +1,8 @@
 import cmd from "@dm/cmd";
 import * as chalk from "chalk";
-import * as path from "path";
+import * as chokidar from "chokidar";
 import * as fs from "fs";
+import * as path from "path";
 
 export interface Params {
 	projectDir: string;
@@ -10,9 +11,33 @@ export interface Params {
 
 export async function generate({ projectDir, watch }: Params) {
 	try {
+		projectDir = path
+			.resolve(process.cwd(), projectDir)
+			.replace(/[\/\\]/g, "/");
+
 		if (watch) {
-			console.log("TODO: Implement watcher");
-			await generate_impl(projectDir);
+			const onChanges = async () => {
+				await generate_impl(projectDir);
+				console.log(chalk.gray("Watching for changes..."));
+			}
+
+			const watcher = chokidar.watch("**/CMakeLists.txt", {
+				persistent: true,
+				ignoreInitial: true,
+				followSymlinks: true,
+				cwd: projectDir,
+				ignorePermissionErrors: false,
+			});
+
+			watcher.once("ready", async () => {
+				await onChanges();
+
+				watcher
+					.on("error", err => { throw err; })
+					.on("add", onChanges)
+					.on("change", onChanges)
+					.on("unlink", onChanges);
+			});
 		}
 		else {
 			await generate_impl(projectDir);
@@ -35,10 +60,6 @@ export async function generate({ projectDir, watch }: Params) {
 }
 
 async function generate_impl(projectDir: string) {
-	projectDir = path
-		.resolve(process.cwd(), projectDir)
-		.replace(/[\/\\]/g, "/");
-
 	const clangDir = path.join(projectDir, ".clangd");
 	if (!fs.existsSync(clangDir))
 		await fs.promises.mkdir(clangDir);
