@@ -1,0 +1,10 @@
+{
+	"name": "cdb-gen",
+	"version": "0.1.0",
+	"author": "Danny McGee <dannymcgee@gmail.com>",
+	"description": "Generate a compilation database for clangd",
+	"license": "MIT",
+	"bin": {
+		"cdb-gen": "src/main.js"
+	}
+}

@@ -1,0 +1,21 @@
+{
+	"name": "cdb-gen",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/cdb-gen/src",
+	"projectType": "application",
+	"targets": {
+		"build": {
+			"executor": "@nrwl/js:tsc",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/apps/cdb-gen",
+				"main": "apps/cdb-gen/src/main.ts",
+				"tsConfig": "apps/cdb-gen/tsconfig.app.json",
+				"assets": [
+					"apps/cdb-gen/*.md",
+					"apps/cdb-gen/package.json"
+				]
+			}
+		}
+	}
+}
