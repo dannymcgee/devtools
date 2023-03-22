@@ -17,7 +17,19 @@ export async function generate({ projectDir, watch }: Params) {
 
 		if (watch) {
 			const onChanges = async () => {
-				await generate_impl(projectDir);
+				try {
+					await generate_impl(projectDir);
+				}
+				catch (err) {
+					if (err && err.toString().includes("cmake exited")) {
+						// This is likely a CMake configuration error rather than a
+						// problem with this utility, so just ignore and allow it to
+						// try again on the next change
+					} else {
+						throw err;
+					}
+				}
+
 				console.log(chalk.gray("Watching for changes..."));
 			}
 
