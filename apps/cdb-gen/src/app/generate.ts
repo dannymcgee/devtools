@@ -76,7 +76,11 @@ async function generate_impl(projectDir: string) {
 	if (!fs.existsSync(clangDir))
 		await fs.promises.mkdir(clangDir);
 
-	await cmd.run("cmake", ["-G", `"MinGW Makefiles"`, ".."], {
+	await cmd.run("cmake", [
+		"-G", `"MinGW Makefiles"`,
+		"-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE",
+		".."
+	], {
 		cwd: clangDir,
 		shell: true,
 		stdio: ["pipe", "inherit", "inherit"],
